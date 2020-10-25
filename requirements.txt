@@ -1,0 +1,4 @@
+certifi==2020.6.20
+future==0.18.2
+numpy==1.19.2
+torch==1.6.0
