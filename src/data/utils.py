@@ -1,4 +1,6 @@
 from pathlib import Path
+from torch import Generator
+from torch.utils.data import random_split
 
 
 def visdrone_read_train_test(data_root: Path,
@@ -20,3 +22,12 @@ def visdrone_read_train_test(data_root: Path,
         test = file.read().split()
 
     return train, test
+
+
+def train_val_split(dataset: list, train_size: float = 0.9) -> (list, list):
+    train_length = int(len(dataset) * train_size)
+    test_length = len(dataset) - train_length
+    train_split, val_split = random_split(dataset, [train_length, test_length],
+                                          generator=Generator().manual_seed(42))
+
+    return train_split, val_split
