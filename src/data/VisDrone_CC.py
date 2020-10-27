@@ -34,8 +34,7 @@ class VisDroneDatasetCC(Dataset):
         if self.normalize:
             image = image / 255.0
 
-        # todo reshape image to (C, H, W) ???
-
+        image = image.transpose(2, 0, 1)
         return image, label
 
     def __len__(self):
