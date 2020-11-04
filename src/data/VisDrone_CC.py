@@ -1,5 +1,4 @@
 import cv2
-
 from torch.utils.data import Dataset
 from collections import Counter
 
@@ -50,3 +49,11 @@ class VisDroneDatasetCC(Dataset):
             annotations = [x.split(',') for x in file.read().split()]
 
         return Counter([x[0] for x in annotations])
+
+
+# a = VisDroneDatasetCC(['00001'], '/Users/olega/Downloads/VisDrone2020-CC', resize=(700, 700))
+# image, label = a[0]
+# print(label)
+# cv2.imshow('image', image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
