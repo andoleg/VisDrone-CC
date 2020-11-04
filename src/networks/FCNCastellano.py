@@ -53,6 +53,13 @@ class ExtendedFCNCastellano(FCNCastellano, LightningModule):
         self.log('train_loss', loss)
         return {'loss': loss}
 
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        preds = self.forward(x.float())
+        preds = torch.reshape(preds, (-1,))
+        loss = F.l1_loss(preds, y.float())  # mae loss
+        self.log('val_loss', loss)
+
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(self.parameters(), momentum=0.9, lr=10e-5)
         return optimizer
