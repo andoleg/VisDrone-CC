@@ -11,5 +11,5 @@ def print_dataset_info(dataset: Dataset,
     :param name: Dataset identity (train/test/val/etc.)
     """
     print(f'- Dataset {name} is loaded')
-    print(f' - Loaded train len: {len(dataset)}')
-    print(f' - Loaded train batches len: {len(dataloader)}')
+    print(f' - Loaded {name} len: {len(dataset)}')
+    print(f' - Loaded {name} batches len: {len(dataloader)}')
