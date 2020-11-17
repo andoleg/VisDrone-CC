@@ -21,7 +21,7 @@ class TrainerConfig(BaseModel):
     logger: Union[BaseParams, bool] = True  ###
     callbacks: Optional[List[BaseParams]] = None
     # checkpoint_callback: dict = dict()
-    checkpoint_callback: dict = dict()
+    checkpoint_callback: Union[dict, bool] = True,
     # early_stop_callback: bool = False  ### RODO
     default_root_dir: Optional[str] = None
     gradient_clip_val: float = 0

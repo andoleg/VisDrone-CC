@@ -17,7 +17,7 @@ from src.data import VisDroneDatasetCC
 from src.data import visdrone_read_train_test, train_val_split
 from src.networks.FCNCastellano import FCNCastellano, ExtendedFCNCastellano
 from src.utils.print_info import print_dataset_info
-from src.config import TrainerConfig, DataConfig
+from src.config import TrainerConfig, DataConfig, ClassBox
 
 torch.manual_seed(0)
 
@@ -46,6 +46,12 @@ if __name__ == '__main__':
     # Train
     trainer_params = TrainerConfig(**config_yaml['trainer'])
     trainer_params.checkpoint_callback = ModelCheckpoint(**trainer_params.checkpoint_callback)
+
+    trainer_callbacks_list = trainer_params.callbacks
+    if trainer_callbacks_list:
+        trainer_params.callbacks = [ClassBox.callbacks[trainer_callback.name](**trainer_callback.params)
+                                    for trainer_callback in trainer_callbacks_list]
+
     trainer = Trainer(**trainer_params.dict())
 
     model = ExtendedFCNCastellano()
