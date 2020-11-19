@@ -13,15 +13,26 @@ class DataParams(BaseModel):
     dataloader: BaseParams
 
 
-class DataConfig(BaseModel):
-    dataset_root: str = './data/'
+class DataloaderConfig(BaseModel):
+    batch_size: int = 1
+    shuffle: bool = False
+    sampler: Optional[dict] = None
+    batch_sampler: Optional[dict] = None
+    num_workers: int = 0
+    collate_fn: Optional[dict] = None
+    pin_memory: bool = False
+    drop_last: bool = False
+    timeout: int = 0
+    worker_init_fn: Optional[dict] = None
+    multiprocessing_context: Optional[dict] = None
+    generator: Optional[dict] = None
 
 
 class TrainerConfig(BaseModel):
     logger: Union[BaseParams, bool] = True  ###
     callbacks: Optional[List[BaseParams]] = None
     # checkpoint_callback: dict = dict()
-    checkpoint_callback: Union[dict, bool] = True,
+    checkpoint_callback: Union[dict, bool] = True
     # early_stop_callback: bool = False  ### RODO
     default_root_dir: Optional[str] = None
     gradient_clip_val: float = 0

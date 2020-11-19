@@ -1,6 +1,15 @@
 data:
   dataset_root: '/Users/olega/Downloads/VisDrone2020-CC'
 
+dataloader:
+  train:
+    batch_size: 64
+    num_workers: 5
+    shuffle: True
+  test:
+    batch_size: 64
+    num_workers: 5
+
 trainer:
   checkpoint_callback:
     filepath: './models/{epoch}-{val_loss:.4f}'

@@ -17,7 +17,7 @@ from src.data import VisDroneDatasetCC
 from src.data import visdrone_read_train_test, train_val_split
 from src.networks.FCNCastellano import FCNCastellano, ExtendedFCNCastellano
 from src.utils.print_info import print_dataset_info
-from src.config import TrainerConfig, DataConfig, ClassBox
+from src.config import TrainerConfig, ClassBox, DataloaderConfig
 
 torch.manual_seed(0)
 
@@ -36,8 +36,13 @@ if __name__ == '__main__':
 
     train_dataset = VisDroneDatasetCC(train_split, data_root=dataset_root)
     val_dataset = VisDroneDatasetCC(val_split, data_root=dataset_root)
-    train_dataloader = DataLoader(train_dataset, batch_size=64, num_workers=5, shuffle=True, )
-    val_dataloader = DataLoader(val_dataset, batch_size=64, num_workers=5)
+
+    train_dataloader_params = DataloaderConfig(**config_yaml['dataloader']['train'])
+    test_dataloader_params = DataloaderConfig(**config_yaml['dataloader']['test'])
+    train_dataloader = DataLoader(train_dataset, **train_dataloader_params.dict())
+    val_dataloader = DataLoader(val_dataset, **test_dataloader_params.dict())
+    # train_dataloader = DataLoader(train_dataset, batch_size=64, num_workers=5, shuffle=True, )
+    # val_dataloader = DataLoader(val_dataset, batch_size=64, num_workers=5)
 
     # Dataset info
     print_dataset_info(train_dataset, train_dataloader)

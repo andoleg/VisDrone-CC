@@ -1,2 +1,2 @@
 from .box import ClassBox
-from .structure import TrainerConfig, DataConfig
+from .structure import TrainerConfig, DataloaderConfig
