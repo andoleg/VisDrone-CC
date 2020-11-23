@@ -50,7 +50,8 @@ if __name__ == '__main__':
 
     # Train
     trainer_params = TrainerConfig(**config_yaml['trainer'])
-    trainer_params.checkpoint_callback = ModelCheckpoint(**trainer_params.checkpoint_callback)
+    if not isinstance(trainer_params.checkpoint_callback, bool):
+        trainer_params.checkpoint_callback = ModelCheckpoint(**trainer_params.checkpoint_callback)
 
     trainer_callbacks_list = trainer_params.callbacks
     if trainer_callbacks_list:

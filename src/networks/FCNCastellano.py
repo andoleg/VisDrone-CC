@@ -1,3 +1,5 @@
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -44,14 +46,22 @@ class FCNCastellano(nn.Module):
 class ExtendedFCNCastellano(FCNCastellano, LightningModule):
     def __init__(self):
         super().__init__()
+        self.train_losses = list()
+        self.val_losses = list()
 
     def training_step(self, batch, batch_idx):
         x, y = batch
         preds = self.forward(x.float())
         preds = torch.reshape(preds, (-1,))
         loss = F.l1_loss(preds, y.float())  # mae loss
+        self.train_losses.append(loss.item())
         self.log('train_loss', loss)
         return {'loss': loss}
+
+    def training_epoch_end(self, outputs) -> None:
+        average_loss = np.mean(self.train_losses)
+        self.log('train_epoch_loss', average_loss)  # log mean losses on epoch end
+        self.train_losses = list()
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
@@ -59,9 +69,15 @@ class ExtendedFCNCastellano(FCNCastellano, LightningModule):
         preds = torch.reshape(preds, (-1,))
         loss = F.l1_loss(preds, y.float())  # mae loss
         metrics = {'val_loss': loss}
+        self.val_losses.append(loss.item())
         # self.log('val_loss', loss)
         self.log_dict(metrics)
         return metrics
+
+    def validation_epoch_end(self, outputs) -> None:
+        average_loss = np.mean(self.val_losses)
+        self.log('val_epoch_loss', average_loss)  # log mean losses on epoch end
+        self.val_losses = list()
 
     def test_step(self, batch, batch_idx):
         metrics = self.validation_step(batch, batch_idx)

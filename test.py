@@ -12,7 +12,7 @@ from src.data import VisDroneDatasetCC
 from src.data import visdrone_read_train_test, train_val_split
 from src.networks.FCNCastellano import FCNCastellano, ExtendedFCNCastellano
 from src.utils.print_info import print_dataset_info
-from src.config import TrainerConfig, DataConfig
+from src.config import TrainerConfig
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -43,9 +43,10 @@ if __name__ == '__main__':
 
     # Trainer
     trainer_params = TrainerConfig(**config_yaml['trainer'])
-    trainer_params.checkpoint_callback = ModelCheckpoint(**trainer_params.checkpoint_callback)
+    if not isinstance(trainer_params.checkpoint_callback, bool):
+        trainer_params.checkpoint_callback = ModelCheckpoint(**trainer_params.checkpoint_callback)
     trainer = Trainer(**trainer_params.dict())
 
     # Test
-    trainer.test(model, test_dataloaders=val_dataloader)
+    trainer.test(model, test_dataloaders=val_dataloader, verbose=True)
     # todo check if logging works correctly with tests

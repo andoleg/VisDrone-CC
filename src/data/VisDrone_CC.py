@@ -60,6 +60,9 @@ class VisDroneDatasetCC(Dataset):
     def __len__(self):
         return len(self.img_paths)
 
+    def __str__(self):
+        return [x[0] for x in self.img_paths]
+
     @staticmethod
     def read_annotation_file(filename: Path) -> dict:
         """
