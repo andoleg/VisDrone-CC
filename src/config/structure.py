@@ -15,11 +15,11 @@ class DataParams(BaseModel):
 
 
 class VisDroneDataConfig(BaseModel):
-    data_root: str = None,
-    im_folder: str = 'sequences',
-    an_folders: str = 'annotations',
-    resize: tuple = (128, 128),
-    normalize: bool = True,
+    data_root: str = None
+    im_folder: str = 'sequences'
+    an_folders: str = 'annotations'
+    resize: tuple = (128, 128)
+    normalize: bool = True
     train: bool = True
 
 
