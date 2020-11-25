@@ -1,5 +1,10 @@
 data:
-  dataset_root: '/Users/olega/Downloads/VisDrone2020-CC'
+  data_root: '/Users/olega/Downloads/VisDrone2020-CC'
+  im_folder: 'sequences'
+  an_folders: 'annotations'
+  resize: !!python/tuple [512, 512]
+  normalize: True
+  train: True
 
 dataloader:
   train:
@@ -22,16 +27,16 @@ trainer:
     period: 1
     prefix: ''
 
-  callbacks:
-    - name: 'EarlyStopping'
-      params:
-        monitor: 'val_loss'
-        min_delta: 0.00
-        patience: 1
-        verbose: False
-        mode: 'max'
+#  callbacks:
+#    - name: 'EarlyStopping'
+#      params:
+#        monitor: 'val_loss'
+#        min_delta: 0.00
+#        patience: 1
+#        verbose: False
+#        mode: 'max'
 
-  fast_dev_run: False
+  fast_dev_run: True
   gpus: 0
   max_epochs: 100
   min_epochs: 1

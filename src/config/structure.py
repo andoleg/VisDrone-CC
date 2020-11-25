@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel
@@ -11,6 +12,15 @@ class BaseParams(BaseModel):
 class DataParams(BaseModel):
     dataset: BaseParams
     dataloader: BaseParams
+
+
+class VisDroneDataConfig(BaseModel):
+    data_root: str = None,
+    im_folder: str = 'sequences',
+    an_folders: str = 'annotations',
+    resize: tuple = (128, 128),
+    normalize: bool = True,
+    train: bool = True
 
 
 class DataloaderConfig(BaseModel):
