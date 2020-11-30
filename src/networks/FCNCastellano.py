@@ -8,21 +8,19 @@ from pytorch_lightning.core.lightning import LightningModule
 
 
 class FCNCastellano(nn.Module):
-    def __init__(self, in_channels=3):
+    def __init__(self, in_channels=3, out_channels=64):
         super(FCNCastellano, self).__init__()
 
-        # TODO parametrize feature numbers
         features = [
-            nn.Conv2d(in_channels=in_channels, out_channels=32, kernel_size=(5, 5), stride=1),
+            nn.Conv2d(in_channels=in_channels, out_channels=out_channels//2, kernel_size=(5, 5), stride=1),
             nn.PReLU(),
             nn.MaxPool2d(kernel_size=(2, 2), stride=2),
-            nn.BatchNorm2d(num_features=32, eps=0.001, momentum=0.99),
-
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), stride=1),
+            nn.BatchNorm2d(num_features=out_channels//2, eps=0.001, momentum=0.99),
+            nn.Conv2d(in_channels=out_channels//2, out_channels=out_channels, kernel_size=(3, 3), stride=1),
             nn.PReLU(),
-            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=1),
+            nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(3, 3), stride=1),
             nn.PReLU(),
-            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=1),
+            nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(3, 3), stride=1),
             nn.PReLU(),
 
             nn.Dropout2d(0.5),
