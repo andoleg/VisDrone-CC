@@ -2,7 +2,7 @@ data:
   data_root: '/Users/olega/Downloads/VisDrone2020-CC'
   im_folder: 'sequences'
   an_folders: 'annotations'
-  resize: !!python/tuple [512, 512]
+  resize: !!python/tuple [128, 128]
   normalize: True
   train: True
 
@@ -18,7 +18,7 @@ dataloader:
 trainer:
   checkpoint_callback:
     filepath: './models/{epoch}-{val_loss:.4f}'
-    monitor: 'val_loss'
+    monitor: 'val_epoch_loss'
     verbose: True
     save_last: True
     save_top_k: 1
@@ -36,10 +36,11 @@ trainer:
 #        verbose: False
 #        mode: 'max'
 
-  fast_dev_run: True
+  fast_dev_run: False
   gpus: 0
   max_epochs: 100
   min_epochs: 1
+  log_every_n_steps: 1
 
 test:
   checkpoint_path: '/Users/olega/PycharmProjects/CrowdCounting/models/last.ckpt' # None or path to checkpoint

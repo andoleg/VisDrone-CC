@@ -68,7 +68,7 @@ class ExtendedFCNCastellanoBN(FCNCastellanoBN, LightningModule):
         return {'loss': loss}
 
     def training_epoch_end(self, outputs) -> None:
-        average_loss = np.mean(self.train_losses)
+        average_loss = torch.mean(torch.stack([x["loss"] for x in outputs]))
         self.log('train_epoch_loss', average_loss)  # log mean losses on epoch end
         self.train_losses = list()
 
@@ -84,7 +84,7 @@ class ExtendedFCNCastellanoBN(FCNCastellanoBN, LightningModule):
         return metrics
 
     def validation_epoch_end(self, outputs) -> None:
-        average_loss = np.mean(self.val_losses)
+        average_loss = torch.mean(torch.stack([x["val_loss"] for x in outputs]))
         self.log('val_epoch_loss', average_loss)  # log mean losses on epoch end
         self.val_losses = list()
 

@@ -16,6 +16,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from src.data import VisDroneDatasetCC
 from src.data import visdrone_read_train_test, train_val_split
 from src.networks.FCNCastellano import FCNCastellano, ExtendedFCNCastellano
+from src.networks.bottleneck_exp import ExtendedFCNCastellanoBN
 from src.utils.print_info import print_dataset_info
 from src.config import TrainerConfig, ClassBox, DataloaderConfig, VisDroneDataConfig
 
@@ -62,5 +63,7 @@ if __name__ == '__main__':
 
     trainer = Trainer(**trainer_params.dict())
 
-    model = ExtendedFCNCastellano()
+    # model = ExtendedFCNCastellano()
+    model = ExtendedFCNCastellanoBN()
+
     trainer.fit(model, train_dataloader, val_dataloader)
