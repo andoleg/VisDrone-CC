@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel
@@ -12,6 +11,12 @@ class BaseParams(BaseModel):
 class DataParams(BaseModel):
     dataset: BaseParams
     dataloader: BaseParams
+
+
+class Data(BaseModel):
+    train: DataParams
+    eval: DataParams
+    test: DataParams
 
 
 class VisDroneDataConfig(BaseModel):
@@ -36,6 +41,18 @@ class DataloaderConfig(BaseModel):
     worker_init_fn: Optional[dict] = None
     multiprocessing_context: Optional[dict] = None
     generator: Optional[dict] = None
+
+
+class PipelineConfig(BaseModel):
+    # todo finish full pipeline
+    # name: str
+    # models: Dict[str, BaseParams]
+    model: BaseParams
+    # data: Data
+    # criterions: Dict[str, BaseParams]
+    optimizer: List[BaseParams]
+    # schedulers: Optional[List[BaseParams]] = []
+    # metrics: Optional[Dict[str, BaseParams]] = {}
 
 
 class TrainerConfig(BaseModel):
