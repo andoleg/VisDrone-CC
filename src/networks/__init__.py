@@ -1,3 +1,3 @@
 from .FCNCastellano import FCNCastellano
-from .bottleneck_exp import FCNCastellanoBN
+from .bottleneck_exp import FCNCastellanoBN, FCNCastellanoBNDeeper
 from .LightningNetworkExtension import PLNetworkExtension
