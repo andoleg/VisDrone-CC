@@ -6,9 +6,10 @@ from pytorch_lightning.core.lightning import LightningModule
 class PLNetworkExtension(LightningModule):
     def __init__(self):
         super().__init__()
+        # todo allow criterion change
 
     def training_step(self, batch, batch_idx):
-        loss = self.run_batch(batch, batch_idx)
+        loss = self._run_batch(batch, batch_idx)
         self.log('train_loss', loss)
         return {'loss': loss}
 
@@ -17,7 +18,7 @@ class PLNetworkExtension(LightningModule):
         self.log('train_epoch_loss', average_loss)  # log mean losses on epoch end
 
     def validation_step(self, batch, batch_idx):
-        loss = self.run_batch(batch, batch_idx)
+        loss = self._run_batch(batch, batch_idx)
         metrics = {'val_loss': loss}
         self.log_dict(metrics)
         return metrics
@@ -27,7 +28,7 @@ class PLNetworkExtension(LightningModule):
         self.log('val_epoch_loss', average_loss)  # log mean losses on epoch end
 
     def test_step(self, batch, batch_idx):
-        loss = self.run_batch(batch, batch_idx)
+        loss = self._run_batch(batch, batch_idx)
         metrics = {'test_loss': loss}
         self.log_dict(metrics, on_step=True, on_epoch=True)
         return metrics
@@ -40,7 +41,7 @@ class PLNetworkExtension(LightningModule):
         optimizer = torch.optim.SGD(self.parameters(), momentum=0.9, lr=10e-5)
         return optimizer
 
-    def run_batch(self, batch, batch_idx):
+    def _run_batch(self, batch, batch_idx):
         x, y = batch
         preds = self.forward(x.float())
         preds = torch.reshape(preds, (-1,))
