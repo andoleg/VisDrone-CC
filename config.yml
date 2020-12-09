@@ -1,9 +1,16 @@
 pipeline:
   model:
-    name: 'FCNCastellanoBN'
+    name: 'ResNet'
     params:
+#      Castellano params
+#      in_channels: 3
+#      out_channels: 64
+
+#      ResNet params
       in_channels: 3
-      out_channels: 64
+      blocks_sizes: !!python/tuple [32, 64, 128, 256]
+      deepths: !!python/tuple [1, 1, 1, 1]
+      activation: 'relu'
 
   optimizer:
     - name: "SGD"
