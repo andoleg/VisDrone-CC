@@ -7,6 +7,7 @@ pipeline:
 #      out_channels: 64
 
 #      ResNet params
+      initial_size: 512
       in_channels: 3
       blocks_sizes: !!python/tuple [32, 64, 128, 256]
       deepths: !!python/tuple [1, 1, 1, 1]
@@ -40,7 +41,7 @@ data:
   data_root: '/Users/olega/Downloads/VisDrone2020-CC'
   im_folder: 'sequences'
   an_folders: 'annotations'
-  resize: !!python/tuple [128, 128]
+  resize: !!python/tuple [512, 512]
   normalize: True
   train: True
 

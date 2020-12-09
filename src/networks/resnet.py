@@ -5,7 +5,7 @@ class ResNet(nn.Module):
     """
     ResNet encoder composed by layers with increasing features.
     """
-    def __init__(self, in_channels=3, blocks_sizes=tuple([32, 64, 128, 256]), deepths=tuple([1, 1, 1, 1]),
+    def __init__(self, initial_size=128, in_channels=3, blocks_sizes=tuple([32, 64, 128, 256]), deepths=tuple([1, 1, 1, 1]),
                  activation='relu', block=ResNetBasicBlock, *args, **kwargs):
         super().__init__()
         self.blocks_sizes = blocks_sizes
@@ -28,7 +28,7 @@ class ResNet(nn.Module):
         ])
 
         self.head = nn.Sequential(
-            nn.Linear(in_features=self.blocks_sizes[-1] * 16, out_features=128),
+            nn.Linear(in_features=self.blocks_sizes[-1] * (initial_size // 32)**2, out_features=128),
             nn.Linear(128, 1)
         )
 
