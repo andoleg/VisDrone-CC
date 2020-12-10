@@ -4,7 +4,7 @@ import time
 
 
 # taken from https://github.com/sacmehta/ESPNet/issues/57
-def computeTime(model, device='cuda', input_size=(128, 128)):
+def computeTime(model, device=1, input_size=(128, 128)):
     inputs = torch.randn(1, 3, *input_size)
     if device == 1:
         model = model.cuda()
