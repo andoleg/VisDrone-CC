@@ -48,6 +48,7 @@ if __name__ == '__main__':
     ExtendedNetwork = type('Extended', (ClassBox.models[model_params.name], PLNetworkExtension), {})
     model = ExtendedNetwork.load_from_checkpoint(checkpoint_path=config_yaml['test']['checkpoint_path'])
     model.eval()
+    print(f'Loaded model: {model_params.name}')
     # model = ExtendedFCNCastellano.load_from_checkpoint(checkpoint_path=config_yaml['test']['checkpoint_path'])
     # model = ExtendedFCNCastellanoBN.load_from_checkpoint(checkpoint_path=config_yaml['test']['checkpoint_path'])
 
