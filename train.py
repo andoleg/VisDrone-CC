@@ -62,5 +62,6 @@ if __name__ == '__main__':
     model_params = pipeline_config.model
     ExtendedNetwork = type('ExtendedNet', (ClassBox.models[model_params.name], PLNetworkExtension), {})
     model = ExtendedNetwork(**model_params.params)
+    print(f'Loaded model: {model_params.name}')
 
     trainer.fit(model, train_dataloader, val_dataloader)
