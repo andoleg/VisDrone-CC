@@ -12,6 +12,7 @@ from src.data import VisDroneDatasetCC
 from src.data import visdrone_read_train_test, train_val_split
 from src.networks import PLNetworkExtension
 from src.utils.print_info import print_dataset_info
+from src.utils.metrics import computeTime
 from src.config import TrainerConfig, VisDroneDataConfig, DataloaderConfig, PipelineConfig, ClassBox
 
 if __name__ == '__main__':
@@ -46,6 +47,7 @@ if __name__ == '__main__':
     model_params = pipeline_config.model
     ExtendedNetwork = type('Extended', (ClassBox.models[model_params.name], PLNetworkExtension), {})
     model = ExtendedNetwork.load_from_checkpoint(checkpoint_path=config_yaml['test']['checkpoint_path'])
+    model.eval()
     # model = ExtendedFCNCastellano.load_from_checkpoint(checkpoint_path=config_yaml['test']['checkpoint_path'])
     # model = ExtendedFCNCastellanoBN.load_from_checkpoint(checkpoint_path=config_yaml['test']['checkpoint_path'])
 
@@ -56,4 +58,7 @@ if __name__ == '__main__':
 
     # Test
     trainer.test(model, test_dataloaders=val_dataloader, verbose=True)
-    # todo check if logging works correctly with tests
+
+    if config_yaml['test']['benchmark']:
+        average_time, fps = computeTime(model, device=config_yaml['trainer']['gpus'], input_size=config_yaml['data']['resize'])
+        print(f'\n - Average time for model {config_yaml["pipeline"]["model"]["name"]} is {average_time}, FPS is {fps}')

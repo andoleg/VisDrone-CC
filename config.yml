@@ -1,17 +1,17 @@
 pipeline:
   model:
-    name: 'ResNet'
+    name: 'FCNCastellano'
     params:
 #      Castellano params
-#      in_channels: 3
-#      out_channels: 64
+      in_channels: 3
+      out_channels: 64
 
 #      ResNet params
-      initial_size: 512
-      in_channels: 3
-      blocks_sizes: !!python/tuple [32, 64, 128, 256]
-      deepths: !!python/tuple [1, 1, 1, 1]
-      activation: 'relu'
+#      initial_size: 128
+#      in_channels: 3
+#      blocks_sizes: !!python/tuple [32, 64, 128, 256]
+#      deepths: !!python/tuple [1, 1, 1, 1]
+#      activation: 'relu'
 
   optimizer:
     - name: "SGD"
@@ -41,7 +41,7 @@ data:
   data_root: '/Users/olega/Downloads/VisDrone2020-CC'
   im_folder: 'sequences'
   an_folders: 'annotations'
-  resize: !!python/tuple [512, 512]
+  resize: !!python/tuple [128, 128]
   normalize: True
   train: True
 
@@ -75,7 +75,7 @@ trainer:
 #        verbose: False
 #        mode: 'max'
 
-  fast_dev_run: True
+  fast_dev_run: False
   gpus: 0
   max_epochs: 100
   min_epochs: 1
@@ -83,4 +83,5 @@ trainer:
 
 test:
   checkpoint_path: '/Users/olega/PycharmProjects/CrowdCounting/models/last.ckpt' # None or path to checkpoint
+  benchmark: True
 
