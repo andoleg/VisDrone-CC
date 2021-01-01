@@ -7,9 +7,9 @@ from src.data.utils import gen_discrete_map
 
 
 class VisDroneDatasetCC(Dataset):
-    def __init__(self, folder_ids: list, data_root: Path,
-                 im_folder: str = 'sequences',
-                 an_folders: str = 'annotations',
+    def __init__(self, data_root: Path,
+                 im_folder: str = 'images',
+                 an_folder: str = 'annotations',
                  resize: tuple = (128, 128),
                  normalize: bool = True,
                  train: bool = True,
@@ -18,7 +18,7 @@ class VisDroneDatasetCC(Dataset):
         :param folder_ids: list of ids of dataset tracks
         :param data_root: path to root "VisDrone2020-CC" folder
         :param im_folder: name of image folder
-        :param an_folders: name of annotation folder
+        :param an_folder: name of annotation folder
         :param resize: desired image size
         :param normalize: image normalization
         :param train: if false, uses test data (that has no annotations)
@@ -31,11 +31,13 @@ class VisDroneDatasetCC(Dataset):
         self.n_points = n_points
 
         data_root = Path(data_root)
+        folder_ids = [x.name.split('.')[0] for x in (data_root / an_folder).glob('*.txt')]
+
         if self.train:
             for f_id in folder_ids:
                 imgs = (data_root / im_folder / f_id).glob('*')
 
-                annotation_path = (data_root / an_folders / f_id).with_suffix('.txt')
+                annotation_path = (data_root / an_folder / f_id).with_suffix('.txt')
                 annotations = self.read_annotation_file(annotation_path)
 
                 for img in imgs:
@@ -89,11 +91,3 @@ class VisDroneDatasetCC(Dataset):
             for point in annotations:
                 points[point[0]].append((int(point[1]), int(point[2])))
             return points
-
-
-# a = VisDroneDatasetCC(['00001'], '/Users/olega/Downloads/VisDrone2020-CC', resize=(700, 700))
-# image, label = a[0]
-# print(label)
-# cv2.imshow('image', image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()

@@ -8,15 +8,14 @@ import argparse
 from pathlib import Path
 
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from src.data import visdrone_read_train_test, train_val_split, VisDroneDatasetCC
 from src.networks import FCNCastellano, FCNCastellanoBN, PLNetworkExtension
 from src.utils.print_info import print_dataset_info
-from src.config import TrainerConfig, ClassBox, DataloaderConfig, VisDroneDataConfig, PipelineConfig
+from src.config import TrainerConfig, ClassBox, DataloaderConfig, VisDroneDataConfig, PipelineConfig, Data
 
 torch.manual_seed(0)
 
@@ -32,15 +31,17 @@ if __name__ == '__main__':
     test_dataloader_params = DataloaderConfig(**config_yaml['dataloader']['test'])
     trainer_params = TrainerConfig(**config_yaml['trainer'])
     pipeline_config = PipelineConfig(**config_yaml['pipeline'])
-    dataset_params = VisDroneDataConfig(**config_yaml['data'])
-    dataset_params.data_root = Path(dataset_params.data_root)
 
-    # Load data
-    train_split, test_split = visdrone_read_train_test(data_root=dataset_params.data_root)
-    train_split, val_split = train_val_split(train_split)
+    # todo optional validation
+    # Load dataset
+    data_params = Data(**config_yaml['data'])
+    data_params.train = [ClassBox.datasets[dataset.name](**dataset.params)
+                         for dataset in data_params.train]
+    data_params.val = [ClassBox.datasets[dataset.name](**dataset.params)
+                       for dataset in data_params.val]
 
-    train_dataset = VisDroneDatasetCC(train_split, **dataset_params.dict())
-    val_dataset = VisDroneDatasetCC(val_split, **dataset_params.dict())
+    train_dataset = ConcatDataset(data_params.train)
+    val_dataset = ConcatDataset(data_params.val)
     train_dataloader = DataLoader(train_dataset, **train_dataloader_params.dict())
     val_dataloader = DataLoader(val_dataset, **test_dataloader_params.dict())
 

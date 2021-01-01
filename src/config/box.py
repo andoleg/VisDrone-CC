@@ -1,4 +1,5 @@
 from src import networks
+from src import data
 
 from torch.nn import Module
 from pytorch_lightning.callbacks import Callback
@@ -8,6 +9,7 @@ from torch import optim
 from torch.optim import lr_scheduler
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data.dataloader import DataLoader
+from torch.utils.data import Dataset
 from pytorch_lightning import loggers
 from pytorch_lightning.loggers import LightningLoggerBase
 
@@ -17,6 +19,12 @@ class ClassBox:
         k: v
         for k, v in networks.__dict__.items()
         if isinstance(v, type) and issubclass(v, Module)
+    }
+
+    datasets: dict = {
+        k: v
+        for k, v in data.__dict__.items()
+        if isinstance(v, type) and issubclass(v, Dataset)
     }
 
     callbacks: dict = {

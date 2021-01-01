@@ -19,31 +19,33 @@ pipeline:
         lr: 10e-5
         momentum: 0.9
 
-#  data:
-#    train:
-#      dataloader:
-#        batch_size: 64
-#        num_workers: 5
-#        shuffle: True
-#    test:
-#      dataloader:
-#        batch_size: 64
-#        num_workers: 5
-#    detaset:
-#      data_root: '/Users/olega/Downloads/VisDrone2020-CC'
-#      im_folder: 'sequences'
-#      an_folders: 'annotations'
-#      resize: !!python/tuple [128, 128]
-#      normalize: True
-#      train: True
-
 data:
-  data_root: '/Users/olega/Downloads/VisDrone2020-CC'
-  im_folder: 'sequences'
-  an_folders: 'annotations'
-  resize: !!python/tuple [128, 128]
-  normalize: True
-  train: True
+  train:
+    - name: "VisDroneDatasetСС"
+      params:
+#        data_root: '/Users/olega/Downloads/VisDrone2019-DET-train'
+        data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/train'
+        im_folder: 'images'
+        an_folder: 'annotations'
+        resize: !!python/tuple [128, 128]
+        normalize: True
+    - name: "VisDroneDatasetDET"
+      params:
+        data_root: '/Users/olega/Downloads/VisDrone2019-DET-train'
+        im_folder: 'images'
+        an_folder: 'annotations'
+        resize: !!python/tuple [128, 128]
+        normalize: True
+  val:
+    - name: "VisDroneDatasetCC"
+      params:
+#        data_root: '/Users/olega/Downloads/VisDrone2019-DET-test-dev'
+        data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/val'
+        im_folder: 'images'
+        an_folder: 'annotations'
+        resize: !!python/tuple [128, 128]
+        normalize: True
+
 
 dataloader:
   train:
@@ -75,7 +77,7 @@ trainer:
 #        verbose: False
 #        mode: 'max'
 
-  fast_dev_run: False
+  fast_dev_run: True
   gpus: 0
   max_epochs: 100
   min_epochs: 1
@@ -83,5 +85,6 @@ trainer:
 
 test:
   checkpoint_path: '/Users/olega/PycharmProjects/CrowdCounting/models/last.ckpt' # None or path to checkpoint
+  resize: !!python/tuple [128, 128]  # same as in dataset!!!
   benchmark: True
 

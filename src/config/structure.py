@@ -8,24 +8,19 @@ class BaseParams(BaseModel):
     params: Optional[dict] = {}
 
 
-class DataParams(BaseModel):
-    dataset: BaseParams
-    dataloader: BaseParams
+class VisDroneDataConfig(BaseModel):
+    name: str = None
+    data_root: str = None
+    im_folder: str = 'sequences'
+    an_folder: str = 'annotations'
+    resize: tuple = (128, 128)
+    normalize: bool = True
 
 
 class Data(BaseModel):
-    train: DataParams
-    eval: DataParams
-    test: DataParams
-
-
-class VisDroneDataConfig(BaseModel):
-    data_root: str = None
-    im_folder: str = 'sequences'
-    an_folders: str = 'annotations'
-    resize: tuple = (128, 128)
-    normalize: bool = True
-    train: bool = True
+    train: List[BaseParams]
+    val: List[BaseParams]
+    test: Optional[List[BaseParams]]
 
 
 class DataloaderConfig(BaseModel):
