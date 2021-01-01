@@ -15,7 +15,7 @@ class PLNetworkExtension(LightningModule):
 
     def training_epoch_end(self, outputs) -> None:
         average_loss = torch.mean(torch.stack([x["loss"] for x in outputs]))
-        self.log('train_epoch_loss', average_loss)  # log mean losses on epoch end
+        self.log('train_epoch_loss', average_loss, on_epoch=True, on_step=False)  # log mean losses on epoch end
 
     def validation_step(self, batch, batch_idx):
         loss = self._run_batch(batch, batch_idx)
@@ -25,7 +25,7 @@ class PLNetworkExtension(LightningModule):
 
     def validation_epoch_end(self, outputs) -> None:
         average_loss = torch.mean(torch.stack([x["val_loss"] for x in outputs]))
-        self.log('val_epoch_loss', average_loss)  # log mean losses on epoch end
+        self.log('val_epoch_loss', average_loss, on_epoch=True, prog_bar=True)  # log mean losses on epoch end
 
     def test_step(self, batch, batch_idx):
         loss, mse_loss = self._run_batch(batch, batch_idx, test=True)
