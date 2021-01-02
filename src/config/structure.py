@@ -3,26 +3,6 @@ from typing import Dict, List, Optional, Union
 from pydantic import BaseModel
 
 
-class BaseParams(BaseModel):
-    name: str
-    params: Optional[dict] = {}
-
-
-class VisDroneDataConfig(BaseModel):
-    name: str = None
-    data_root: str = None
-    im_folder: str = 'sequences'
-    an_folder: str = 'annotations'
-    resize: tuple = (128, 128)
-    normalize: bool = True
-
-
-class Data(BaseModel):
-    train: List[BaseParams]
-    val: List[BaseParams]
-    test: Optional[List[BaseParams]]
-
-
 class DataloaderConfig(BaseModel):
     batch_size: int = 1
     shuffle: bool = False
@@ -36,6 +16,22 @@ class DataloaderConfig(BaseModel):
     worker_init_fn: Optional[dict] = None
     multiprocessing_context: Optional[dict] = None
     generator: Optional[dict] = None
+
+
+class BaseParams(BaseModel):
+    name: str
+    params: Optional[dict] = {}
+
+
+class DataModule(BaseModel):
+    datasets: List[BaseParams]
+    dataloader: DataloaderConfig
+
+
+class Data(BaseModel):
+    train: DataModule
+    val: DataModule
+    test: Optional[DataModule]
 
 
 class PipelineConfig(BaseModel):

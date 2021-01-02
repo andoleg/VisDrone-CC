@@ -5,14 +5,12 @@ pipeline:
 #      Castellano params
       in_channels: 3
       out_channels: 64
-
 #      ResNet params
 #      initial_size: 128
 #      in_channels: 3
 #      blocks_sizes: !!python/tuple [32, 64, 128, 256]
 #      deepths: !!python/tuple [1, 1, 1, 1]
 #      activation: 'relu'
-
   optimizer:
     - name: "SGD"
       params:
@@ -21,40 +19,45 @@ pipeline:
 
 data:
   train:
-    - name: "VisDroneDatasetСС"
-      params:
-#        data_root: '/Users/olega/Downloads/VisDrone2019-DET-train'
-        data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/train'
-        im_folder: 'images'
-        an_folder: 'annotations'
-        resize: !!python/tuple [128, 128]
-        normalize: True
-    - name: "VisDroneDatasetDET"
-      params:
-        data_root: '/Users/olega/Downloads/VisDrone2019-DET-train'
-        im_folder: 'images'
-        an_folder: 'annotations'
-        resize: !!python/tuple [128, 128]
-        normalize: True
+    dataloader:
+      batch_size: 64
+      num_workers: 5
+      shuffle: True
+    datasets:
+      - name: "VisDroneDatasetCC"
+        params:
+          data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/train'
+          im_folder: 'images'
+          an_folder: 'annotations'
+          resize: !!python/tuple [128, 128]
+          normalize: True
+      - name: "VisDroneDatasetDET"
+        params:
+          data_root: '/Users/olega/Downloads/VisDrone2019-DET-train'
+          im_folder: 'images'
+          an_folder: 'annotations'
+          resize: !!python/tuple [128, 128]
+          normalize: True
   val:
-    - name: "VisDroneDatasetCC"
-      params:
-#        data_root: '/Users/olega/Downloads/VisDrone2019-DET-test-dev'
-        data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/val'
-        im_folder: 'images'
-        an_folder: 'annotations'
-        resize: !!python/tuple [128, 128]
-        normalize: True
-
-
-dataloader:
-  train:
-    batch_size: 64
-    num_workers: 5
-    shuffle: True
-  test:
-    batch_size: 64
-    num_workers: 5
+    dataloader:
+      batch_size: 64
+      num_workers: 5
+      shuffle: False
+    datasets:
+      - name: "VisDroneDatasetCC"
+        params:
+          data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/val'
+          im_folder: 'images'
+          an_folder: 'annotations'
+          resize: !!python/tuple [128, 128]
+          normalize: True
+      - name: "VisDroneDatasetDET"
+        params:
+          data_root: '/Users/olega/Downloads/VisDrone2019-DET-val'
+          im_folder: 'images'
+          an_folder: 'annotations'
+          resize: !!python/tuple [128, 128]
+          normalize: True
 
 trainer:
   checkpoint_callback:

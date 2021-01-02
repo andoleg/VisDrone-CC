@@ -1,2 +1,2 @@
 from .box import ClassBox
-from .structure import TrainerConfig, DataloaderConfig, VisDroneDataConfig, PipelineConfig, Data
+from .structure import TrainerConfig, PipelineConfig, Data

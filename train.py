@@ -2,10 +2,8 @@
 # import sys
 # sys.path.append("/content/VisDrone-CC")
 
-import os
 import yaml
 import argparse
-from pathlib import Path
 
 import torch
 from torch.utils.data import DataLoader, ConcatDataset
@@ -13,9 +11,9 @@ from torch.utils.data import DataLoader, ConcatDataset
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from src.networks import FCNCastellano, FCNCastellanoBN, PLNetworkExtension
+from src.networks import PLNetworkExtension
 from src.utils.print_info import print_dataset_info
-from src.config import TrainerConfig, ClassBox, DataloaderConfig, VisDroneDataConfig, PipelineConfig, Data
+from src.config import TrainerConfig, ClassBox, PipelineConfig, Data
 
 torch.manual_seed(0)
 
@@ -27,23 +25,20 @@ if __name__ == '__main__':
     config_path = parser.parse_args().config_path
     config_yaml = yaml.load(open(config_path, "r"), Loader=yaml.FullLoader)
 
-    train_dataloader_params = DataloaderConfig(**config_yaml['dataloader']['train'])
-    test_dataloader_params = DataloaderConfig(**config_yaml['dataloader']['test'])
     trainer_params = TrainerConfig(**config_yaml['trainer'])
     pipeline_config = PipelineConfig(**config_yaml['pipeline'])
+    data_params = Data(**config_yaml['data'])
 
     # todo optional validation
     # Load dataset
-    data_params = Data(**config_yaml['data'])
-    data_params.train = [ClassBox.datasets[dataset.name](**dataset.params)
-                         for dataset in data_params.train]
-    data_params.val = [ClassBox.datasets[dataset.name](**dataset.params)
-                       for dataset in data_params.val]
-
-    train_dataset = ConcatDataset(data_params.train)
-    val_dataset = ConcatDataset(data_params.val)
-    train_dataloader = DataLoader(train_dataset, **train_dataloader_params.dict())
-    val_dataloader = DataLoader(val_dataset, **test_dataloader_params.dict())
+    data_params.train.datasets = [ClassBox.datasets[dataset.name](**dataset.params)
+                                  for dataset in data_params.train.datasets]
+    data_params.val.datasets = [ClassBox.datasets[dataset.name](**dataset.params)
+                                for dataset in data_params.val.datasets]
+    train_dataset = ConcatDataset(data_params.train.datasets)
+    val_dataset = ConcatDataset(data_params.val.datasets)
+    train_dataloader = DataLoader(train_dataset, **data_params.train.dataloader.dict())
+    val_dataloader = DataLoader(val_dataset, **data_params.val.dataloader.dict())
 
     # Dataset info
     print_dataset_info(train_dataset, train_dataloader)
