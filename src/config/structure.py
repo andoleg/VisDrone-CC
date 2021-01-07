@@ -24,25 +24,24 @@ class BaseParams(BaseModel):
 
 
 class DataModule(BaseModel):
-    datasets: List[BaseParams]
-    dataloader: DataloaderConfig
+    datasets: List[BaseParams] = None
+    dataloader: DataloaderConfig = None
+    transforms: Optional[List[BaseParams]] = None
 
 
 class Data(BaseModel):
-    train: DataModule
-    val: DataModule
-    test: Optional[DataModule]
+    train: DataModule = None
+    val: DataModule = None
+    test: Optional[DataModule] = None
 
 
 class PipelineConfig(BaseModel):
     # todo finish full pipeline
-    # name: str
-    # models: Dict[str, BaseParams]
     model: BaseParams
-    # data: Data
-    # criterions: Dict[str, BaseParams]
-    optimizer: List[BaseParams]
-    # schedulers: Optional[List[BaseParams]] = []
+    data: Data
+    criterions: Dict[str, BaseParams] = {}
+    optimizers: List[BaseParams] = []
+    schedulers: Optional[List[BaseParams]] = []
     # metrics: Optional[Dict[str, BaseParams]] = {}
 
 
