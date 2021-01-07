@@ -10,6 +10,6 @@ def print_dataset_info(dataset: Dataset,
     :param dataloader: PyTorch DataLoader
     :param name: Dataset identity (train/test/val/etc.)
     """
-    print(f'- Dataset {name} is loaded')
-    print(f' - Loaded {name} len: {len(dataset)}')
-    print(f' - Loaded {name} batches len: {len(dataloader)}')
+    print(f'- {name} dataset is loaded')
+    print(f'\t- Loaded {name} len: {len(dataset)}')
+    print(f'\t- Loaded {name} batches len: {len(dataloader)}')
