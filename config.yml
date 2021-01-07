@@ -11,58 +11,78 @@ pipeline:
 #      blocks_sizes: !!python/tuple [32, 64, 128, 256]
 #      deepths: !!python/tuple [1, 1, 1, 1]
 #      activation: 'relu'
-  optimizer:
+  optimizers:
     - name: "SGD"
       params:
-        lr: 10e-5
+        lr: !!python/float 10e-5
         momentum: 0.9
-
-data:
-  train:
-    dataloader:
-      batch_size: 64
-      num_workers: 5
-      shuffle: True
-    datasets:
-      - name: "VisDroneDatasetCC"
-        params:
-          data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/train'
-          im_folder: 'images'
-          an_folder: 'annotations'
-          resize: !!python/tuple [128, 128]
-          normalize: True
-      - name: "VisDroneDatasetDET"
-        params:
-          data_root: '/Users/olega/Downloads/VisDrone2019-DET-train'
-          im_folder: 'images'
-          an_folder: 'annotations'
-          resize: !!python/tuple [128, 128]
-          normalize: True
-  val:
-    dataloader:
-      batch_size: 64
-      num_workers: 5
-      shuffle: False
-    datasets:
-      - name: "VisDroneDatasetCC"
-        params:
-          data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/val'
-          im_folder: 'images'
-          an_folder: 'annotations'
-          resize: !!python/tuple [128, 128]
-          normalize: True
-      - name: "VisDroneDatasetDET"
-        params:
-          data_root: '/Users/olega/Downloads/VisDrone2019-DET-val'
-          im_folder: 'images'
-          an_folder: 'annotations'
-          resize: !!python/tuple [128, 128]
-          normalize: True
+  schedulers:
+    - name: 'StepLR'
+      params:
+        step_size: 15
+        gamma: 0.3
+  criterions:
+    mae:
+      name: 'L1Loss'
+    mse:
+      name: 'MSELoss'
+  data:
+    train:
+      transforms:
+        - name: 'HorizontalFlip'
+          params:
+            p: 0.5
+        - name: 'VerticalFlip'
+      dataloader:
+        batch_size: 64
+        num_workers: 5
+        shuffle: True
+      datasets:
+        - name: "VisDroneDatasetCC"
+          params:
+            data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/val'
+            im_folder: 'images'
+            an_folder: 'annotations'
+            resize: !!python/tuple [128, 128]
+            normalize: True
+#        - name: "VisDroneDatasetDET"
+#          params:
+#            data_root: '/Users/olega/Downloads/VisDrone2019-DET-train'
+#            im_folder: 'images'
+#            an_folder: 'annotations'
+#            resize: !!python/tuple [128, 128]
+#            normalize: True
+    val:
+      dataloader:
+        batch_size: 64
+        num_workers: 5
+        shuffle: False
+      datasets:
+        - name: "VisDroneDatasetCC"
+          params:
+            data_root: '/Users/olega/Downloads/VisDrone2020-CC-split/val'
+            im_folder: 'images'
+            an_folder: 'annotations'
+            resize: !!python/tuple [128, 128]
+            normalize: True
+#        - name: "VisDroneDatasetDET"
+#          params:
+#            data_root: '/Users/olega/Downloads/VisDrone2019-DET-val'
+#            im_folder: 'images'
+#            an_folder: 'annotations'
+#            resize: !!python/tuple [128, 128]
+#            normalize: True
 
 trainer:
+  logger:
+    name: 'TensorBoardLogger'
+    params:
+      save_dir: './logs/'
+      name: 'default_logger'
+      version: 'first_exp'
   checkpoint_callback:
     filepath: './models/{epoch}-{val_loss:.4f}'
-    monitor: 'val_epoch_loss'
+    monitor: 'val_loss'
     verbose: True
     save_last: True
     save_top_k: 1
@@ -80,9 +100,9 @@ trainer:
 #        verbose: False
 #        mode: 'max'
 
-  fast_dev_run: True
+  fast_dev_run: False
   gpus: 0
-  max_epochs: 100
+  max_epochs: 10
   min_epochs: 1
   log_every_n_steps: 1
 

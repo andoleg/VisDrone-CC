@@ -8,8 +8,11 @@ legacy/*
 *.h5
 *.pth
 *.checkpoint
+
 ./lightning_logs/*
 ./models/*
+./logs/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
