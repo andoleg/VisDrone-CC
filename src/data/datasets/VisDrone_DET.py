@@ -1,6 +1,7 @@
 import cv2
 from torch.utils.data import Dataset
 from pathlib import Path
+from typing import Optional, List
 
 
 class VisDroneDatasetDET(Dataset):
@@ -9,7 +10,8 @@ class VisDroneDatasetDET(Dataset):
                  an_folder: str = 'annotations',
                  resize: tuple = (128, 128),
                  normalize: bool = True,
-                 n_points: bool = True) -> None:
+                 n_points: bool = True,
+                 transforms: Optional[List] = None) -> None:
         """
         :param folder_ids: list of ids of dataset tracks
         :param data_root: path to root "VisDrone2020-CC" folder
@@ -23,6 +25,7 @@ class VisDroneDatasetDET(Dataset):
         self.resize = resize
         self.normalize = normalize
         self.n_points = n_points
+        self.transforms = transforms
 
         data_root = Path(data_root)
         imgs = (data_root / im_folder).glob('*')
@@ -48,6 +51,10 @@ class VisDroneDatasetDET(Dataset):
         image = cv2.resize(image, self.resize)
         if self.normalize:
             image = image / 255.0
+
+        if self.transforms is not None:
+            for transform in self.transforms:
+                image = transform(image=image)['image']
 
         image = image.transpose(2, 0, 1)
 

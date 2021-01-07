@@ -2,8 +2,9 @@ import cv2
 from torch.utils.data import Dataset
 from collections import Counter, defaultdict
 from pathlib import Path
+from typing import Optional, List
 
-from src.data.utils import gen_discrete_map
+from src.data.utils.utils import gen_discrete_map
 
 
 class VisDroneDatasetCC(Dataset):
@@ -13,7 +14,8 @@ class VisDroneDatasetCC(Dataset):
                  resize: tuple = (128, 128),
                  normalize: bool = True,
                  train: bool = True,
-                 n_points: bool = True) -> None:
+                 n_points: bool = True,
+                 transforms: Optional[List] = None) -> None:
         """
         :param folder_ids: list of ids of dataset tracks
         :param data_root: path to root "VisDrone2020-CC" folder
@@ -23,12 +25,14 @@ class VisDroneDatasetCC(Dataset):
         :param normalize: image normalization
         :param train: if false, uses test data (that has no annotations)
         :param n_points: if true will use number of people as label, otherwise generate density map
+        :param transforms: list of Albumentation transforms
         """
         self.img_paths = list()  # list of tuples: (image_path, people_count)
         self.resize = resize
         self.normalize = normalize
         self.train = train
         self.n_points = n_points
+        self.transforms = transforms
 
         data_root = Path(data_root)
         folder_ids = [x.name.split('.')[0] for x in (data_root / an_folder).glob('*.txt')]
@@ -56,6 +60,10 @@ class VisDroneDatasetCC(Dataset):
         image = cv2.resize(image, self.resize)
         if self.normalize:
             image = image / 255.0
+
+        if self.transforms is not None:
+            for transform in self.transforms:
+                image = transform(image=image)['image']
 
         image = image.transpose(2, 0, 1)
         if not self.n_points:
