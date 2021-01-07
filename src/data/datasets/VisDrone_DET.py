@@ -46,7 +46,7 @@ class VisDroneDatasetDET(Dataset):
     def __getitem__(self, item):
         image_path, label = self.img_paths[item]
 
-        image = cv2.imread(str(image_path))
+        image = cv2.imread(str(image_path)).astype('float32')
 
         image = cv2.resize(image, self.resize)
         if self.normalize:
