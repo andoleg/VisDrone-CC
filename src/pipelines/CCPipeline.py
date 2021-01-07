@@ -9,13 +9,13 @@ class CCPipeline(Pipeline):
     def training_step(self, batch, batch_idx):
         loss = self._run_batch(batch, batch_idx)
         metrics = {'loss': loss}
-        # self.log('train_loss', loss)
+        self.log_dict(metrics, on_epoch=True, on_step=False)
         return metrics
 
     def validation_step(self, batch, batch_idx):
         loss = self._run_batch(batch, batch_idx)
         metrics = {'val_loss': loss}
-        # self.log_dict(metrics)
+        self.log_dict(metrics)
         return metrics
 
     def test_step(self, batch, batch_idx):
@@ -60,10 +60,9 @@ class CCPipeline(Pipeline):
             average_loss = torch.mean(torch.stack([x['loss'] for x in outputs]))
             metrics = {f'{mode}_loss': average_loss,
                        'step': self.trainer.current_epoch}
-            self.logger.experiment.add_scalar('loss/train', average_loss, self.current_epoch)
-        else:
-            average_loss = torch.mean(torch.stack([x[f'{mode}_loss'] for x in outputs]))
-            metrics = {f'{mode}_loss': average_loss,
+            self.logger.experiment.add_scalar('average_loss/train', average_loss, self.current_epoch)
+        elif mode == 'val':
+            average_loss = torch.mean(torch.stack([x[f'val_loss'] for x in outputs]))
+            metrics = {f'val_loss': average_loss,
                        'step': self.trainer.current_epoch}
-            self.logger.experiment.add_scalar('loss/val', average_loss, self.current_epoch)
-        # self.log_dict(metrics, on_epoch=True, prog_bar=True)
+            self.logger.experiment.add_scalar('average_loss/val', average_loss, self.current_epoch)
