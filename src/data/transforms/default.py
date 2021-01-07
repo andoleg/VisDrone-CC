@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import albumentations as A
-from albumentations import ImageOnlyTransform, HorizontalFlip, VerticalFlip
+from albumentations import ImageOnlyTransform
 
 
 class Grayscale(ImageOnlyTransform):
@@ -15,18 +15,3 @@ class Grayscale(ImageOnlyTransform):
             return np.expand_dims(gray, -1)
         else:
             return cv2.merge([gray] * self.num_output_channels)
-
-
-class Mirror(ImageOnlyTransform):
-    def __init__(self, always_apply=False, p=1):
-        super().__init__(always_apply, p)
-        # self.num_output_channels = num_output_channels
-
-
-# def default_augmentation():
-#     A.DualTransform
-#     return A.compose(
-#         [
-#
-#         ]
-#     )
