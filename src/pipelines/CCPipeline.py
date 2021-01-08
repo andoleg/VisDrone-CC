@@ -9,7 +9,7 @@ class CCPipeline(Pipeline):
     def training_step(self, batch, batch_idx):
         loss = self._run_batch(batch, batch_idx)
         metrics = {'loss': loss}
-        self.log_dict(metrics, on_epoch=True, on_step=False)
+        self.log_dict(metrics)
         return metrics
 
     def validation_step(self, batch, batch_idx):
