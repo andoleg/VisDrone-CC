@@ -1,4 +1,4 @@
-from .FCNCastellano import FCNCastellano
-from .bottleneck_exp import FCNCastellanoBN, FCNCastellanoBNDeeper
-from .LightningNetworkExtension import PLNetworkExtension
-from .resnet import ResNet
+from .CastellanoNet import FCNCastellano
+from .CastellanoBottleneck import FCNCastellanoBN, FCNCastellanoBNDeeper
+from .ResNet import ResNet
+from .EfficientNet import EfficientNetModel

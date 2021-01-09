@@ -1,4 +1,4 @@
-from .resnet_helper import *
+from src.networks.ResNet.utils import *
 
 
 class ResNet(nn.Module):
