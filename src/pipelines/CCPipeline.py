@@ -24,6 +24,7 @@ class CCPipeline(Pipeline):
             'test_mae_loss': mae_loss,
             'test_mse_loss': mse_loss,
         }
+        self.log_dict(metrics)
         return metrics
 
     def training_epoch_end(self, outputs) -> None:
@@ -56,6 +57,8 @@ class CCPipeline(Pipeline):
             }
             self.logger.experiment.add_scalar('test_loss/mae', average_loss, self.current_epoch)
             self.logger.experiment.add_scalar('test_loss/mse', average_mse_loss, self.current_epoch)
+            print('\nResults:')
+            print(f'\tMAE loss: {average_loss}, \n\t MSE loss: {average_mse_loss}')
         elif mode == 'train':
             average_loss = torch.mean(torch.stack([x['loss'] for x in outputs]))
             metrics = {f'{mode}_loss': average_loss,
