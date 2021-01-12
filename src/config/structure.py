@@ -35,9 +35,13 @@ class Data(BaseModel):
     test: Optional[DataModule] = None
 
 
+class Model(BaseParams):
+    load_model: Optional[str] = ''
+
+
 class PipelineConfig(BaseModel):
     # todo finish full pipeline
-    model: BaseParams
+    model: Model
     data: Data
     criterions: Dict[str, BaseParams] = {}
     optimizers: List[BaseParams] = []

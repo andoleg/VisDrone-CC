@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 from pytorch_lightning import LightningModule
-
+from torch import load as load_model
 from src.utils import print_dataset_info
 
 
@@ -13,8 +13,9 @@ class Pipeline(LightningModule):
             optimizers_params,
             schedulers_params,
             data_params,
+            test=False
     ):
-        super().__init__()
+        super(Pipeline, self).__init__()
         self.data_params = data_params
         self.optimizers_params = optimizers_params
         self.schedulers_params = schedulers_params
@@ -22,6 +23,13 @@ class Pipeline(LightningModule):
         from src.config import ClassBox
 
         self.model = ClassBox.models[model_params.name](**model_params.params)
+        if test:
+            state_dict = load_model(model_params.load_model)['state_dict']
+            state_dict = {k[6:]: v for k, v in state_dict.items()}  # remove 'model.' from keys
+            self.model.load_state_dict(state_dict)
+            self.model.eval()
+
+            print(f'- Model loaded: {model_params.load_model}')
 
         criterions = {
             criterion_name: ClassBox.criterions[criterion.name](**criterion.params)

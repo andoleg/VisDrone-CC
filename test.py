@@ -25,7 +25,8 @@ if __name__ == '__main__':
         pipeline_params.criterions,
         pipeline_params.optimizers,
         pipeline_params.schedulers,
-        pipeline_params.data
+        pipeline_params.data,
+        test=True
     )
 
     # Trainer
