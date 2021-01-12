@@ -1,12 +1,14 @@
+from collections import defaultdict
+
 import cv2
 from torch.utils.data import Dataset
 from pathlib import Path
 from typing import Optional, List
 
 
-class VisDroneDatasetDET(Dataset):
+class VisDroneDatasetVID(Dataset):
     def __init__(self, data_root: Path,
-                 im_folder: str = 'images',
+                 im_folder: str = 'sequences',
                  an_folder: str = 'annotations',
                  resize: tuple = (128, 128),
                  normalize: bool = True,
@@ -14,7 +16,7 @@ class VisDroneDatasetDET(Dataset):
                  transforms: Optional[List] = None) -> None:
         """
         :param folder_ids: list of ids of dataset tracks
-        :param data_root: path to root "VisDrone2020-DET" folder
+        :param data_root: path to root "VisDrone2020-VID" folder
         :param im_folder: name of image folder
         :param an_folder: name of annotation folder
         :param resize: desired image size
@@ -28,20 +30,17 @@ class VisDroneDatasetDET(Dataset):
         self.transforms = transforms
 
         data_root = Path(data_root)
-        imgs = (data_root / im_folder).glob('*')
+        folders = (data_root / im_folder).glob('uav*')
 
-        for img in imgs:
-            annotation_path = (data_root / an_folder / img.name).with_suffix('.txt')
+        for subfolder in folders:
+            annotation_path = (data_root / an_folder / subfolder.name).with_suffix('.txt')
             annotations = self.read_annotation_file(annotation_path)
 
-            # print(img)
-            # image = cv2.imread(str(img))
-            # for ann in annotations:
-            #     image = cv2.rectangle(image, (int(ann[0]), int(ann[1])),
-            #                           (int(ann[0]) + int(ann[2]), int(ann[1]) + int(ann[3])), (255, 0, 0), 1)
-            # cv2.imwrite(f'/Users/olega/Downloads/test/{img.name}.jpg', image)
-
-            self.img_paths.append((img, annotations))
+            for img in subfolder.glob('*'):
+                img_id = int(img.stem.lstrip('0'))
+                img_annotation = annotations[img_id]
+                if img_annotation:
+                    self.img_paths.append((img, img_annotation))
 
     def __getitem__(self, item):
         image_path, label = self.img_paths[item]
@@ -66,20 +65,26 @@ class VisDroneDatasetDET(Dataset):
     def __str__(self):
         return [x[0] for x in self.img_paths]
 
-    def read_annotation_file(self, filename: Path, categories: tuple = (1,2)) -> int:
+    def read_annotation_file(self, filename: Path, categories: tuple = (1,2)) -> defaultdict:
         """
         :param filename: path to annotation file
         :param categories: categories of objects of VisDroneDET to use
         :return: dict {'image_id': # of people}
+
+        annotation style:
+        <frame_index>,<target_id>,<bbox_left>,<bbox_top>,<bbox_width>,<bbox_height>,<score>,<object_category>,<truncation>,<occlusion>
         """
         if self.n_points:
             with filename.open() as file:
-                annotations = [x.split(',') for x in file.read().split()]
-                filtered = list()
-                for ann in annotations:
-                    if int(ann[5]) in categories:
-                        filtered.append(ann)
+                annotations = [[int(r) for r in x.split(',')] for x in file.read().split()]
 
-            return len(filtered)
+            filtered = defaultdict(list)
+            for ann in annotations:
+                if ann[7] in categories:
+                    filtered[ann[0]].append(ann)
+
+            for key, value in filtered.items():
+                filtered[key] = len(value)
+            return filtered
         else:
             raise NotImplementedError

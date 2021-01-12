@@ -78,5 +78,5 @@ class Pipeline(LightningModule):
         if self.data_params.test is None:
             return self.val_dataloader()
         test_datasets_params = self.data_params.test.datasets
-        test_dataloader_params = self.data_params.test.datalaoder
+        test_dataloader_params = self.data_params.test.dataloader
         return self.configure_data(test_datasets_params, test_dataloader_params, name='Test')
