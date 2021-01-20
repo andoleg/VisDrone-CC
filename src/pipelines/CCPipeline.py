@@ -1,10 +1,16 @@
 import torch
 from src.pipelines import Pipeline
+from sklearn.metrics import precision_score, recall_score, confusion_matrix, classification_report
+import numpy as np
 
 
 class CCPipeline(Pipeline):
     def forward(self, x):
         return self.model(x)
+
+    def on_test_epoch_start(self) -> None:
+        self.predictions = list()
+        self.ground_truth = list()
 
     def training_step(self, batch, batch_idx):
         loss = self._run_batch(batch, batch_idx)
@@ -35,14 +41,39 @@ class CCPipeline(Pipeline):
 
     def test_epoch_end(self, outputs) -> None:
         self._run_batch_epoch_end(outputs, 'test')
+        self._precision_recall()
+
+    def _precision_recall(self, class_divider=10):
+        gt_classes = list()
+        pred_classes = list()
+        for i in range(len(self.ground_truth)):
+            gt_classes.append(0 if self.ground_truth[i] < class_divider else 1)
+            pred_classes.append(0 if self.predictions[i] < class_divider else 1)
+
+        gt_classes = np.array(gt_classes)
+        pred_classes = np.array(pred_classes)
+
+        print(f'Classification report (0: class < {class_divider}; 1: class >= {class_divider}):')
+        print(classification_report(gt_classes, pred_classes))
+        # print(f'Precision/Recall: {precision_score(gt_classes, pred_classes)}, {recall_score(gt_classes, pred_classes)}')
+        # print(f'Precision/Recall: {precision_score(1 - gt_classes, 1 - pred_classes)}, '
+        #       f'{recall_score(1 - gt_classes, 1 - pred_classes)}')
+
+        self.logger.experiment.add_hparams({'class1_precision': precision_score(1 - gt_classes, 1 - pred_classes),
+                                            'class1_recall': recall_score(1 - gt_classes, 1 - pred_classes),
+                                            'class2_precision': precision_score(gt_classes, pred_classes),
+                                            'class2_recall': recall_score(gt_classes, pred_classes)}, {})
 
     def _run_batch(self, batch, batch_idx, test=False):
         x, y = batch
+        y = y.float()
         preds = self.forward(x.float())
         preds = torch.reshape(preds, (-1,))
-        loss = self.criterions.mae(preds, y.float())  # mae loss
+        loss = self.criterions.mae(preds, y)  # mae loss
         if test:
-            mse_loss = self.criterions.mse(preds, y.float())
+            self.predictions.extend(preds)
+            self.ground_truth.extend(y)
+            mse_loss = self.criterions.mse(preds, y)
             return loss, mse_loss
         return loss
 

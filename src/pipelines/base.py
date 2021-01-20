@@ -2,6 +2,7 @@ from collections import namedtuple
 
 from pytorch_lightning import LightningModule
 from torch import load as load_model
+from torch import device
 from src.utils import print_dataset_info
 
 
@@ -24,7 +25,7 @@ class Pipeline(LightningModule):
 
         self.model = ClassBox.models[model_params.name](**model_params.params)
         if test:
-            state_dict = load_model(model_params.load_model)['state_dict']
+            state_dict = load_model(model_params.load_model, map_location=self.device)['state_dict']
             state_dict = {k[6:]: v for k, v in state_dict.items()}  # remove 'model.' from keys
             self.model.load_state_dict(state_dict)
             self.model.eval()
