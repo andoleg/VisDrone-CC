@@ -59,10 +59,10 @@ class CCPipeline(Pipeline):
         # print(f'Precision/Recall: {precision_score(1 - gt_classes, 1 - pred_classes)}, '
         #       f'{recall_score(1 - gt_classes, 1 - pred_classes)}')
 
-        self.logger.experiment.add_hparams({'class1_precision': precision_score(1 - gt_classes, 1 - pred_classes),
-                                            'class1_recall': recall_score(1 - gt_classes, 1 - pred_classes),
-                                            'class2_precision': precision_score(gt_classes, pred_classes),
-                                            'class2_recall': recall_score(gt_classes, pred_classes)}, {})
+        # self.logger.experiment.add_hparams({'class1_precision': precision_score(1 - gt_classes, 1 - pred_classes),
+        #                                     'class1_recall': recall_score(1 - gt_classes, 1 - pred_classes),
+        #                                     'class2_precision': precision_score(gt_classes, pred_classes),
+        #                                     'class2_recall': recall_score(gt_classes, pred_classes)}, {})
 
     def _run_batch(self, batch, batch_idx, test=False):
         x, y = batch
