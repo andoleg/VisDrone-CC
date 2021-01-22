@@ -1,4 +1,4 @@
 from .CastellanoNet import FCNCastellano
-from .CastellanoBottleneck import FCNCastellanoBN, FCNCastellanoBNDeeper, FCNCastellanoBNSmall
+from .CastellanoBottleneck import *
 from .ResNet import ResNet
 from .EfficientNet import EfficientNetModel
