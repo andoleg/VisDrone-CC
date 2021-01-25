@@ -7,10 +7,12 @@ class StackedNN(nn.Module):
     def __init__(self, batch_size=64):
         super(StackedNN, self).__init__()
 
+        # todo REDO
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.models = [
-            CNN(out_channels=32, kernel_size=3),
-            CNN(out_channels=16, kernel_size=5),
-            Bottleneck(kernel_size=3),
+            CNN(out_channels=32, kernel_size=3).to(device),
+            CNN(out_channels=16, kernel_size=5).to(device),
+            Bottleneck(kernel_size=3).to(device),
         ]
         head_meta = [
             nn.Linear(batch_size * len(self.models), 1),
