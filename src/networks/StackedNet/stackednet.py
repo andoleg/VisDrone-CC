@@ -15,7 +15,7 @@ class StackedNN(nn.Module):
             Bottleneck(kernel_size=3).to(device),
         ]
         head_meta = [
-            nn.Linear(batch_size * len(self.models), 1),
+            nn.Linear(batch_size * len(self.models), batch_size),
         ]
         self.head_meta = nn.Sequential(*head_meta)
 
