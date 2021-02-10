@@ -3,6 +3,8 @@ from pathlib import Path
 from torch import Generator
 from torch.utils.data import random_split
 from cv2 import resize, INTER_CUBIC
+from collections import defaultdict
+
 
 def visdrone_read_train_test(data_root: Path,
                              testlist_name: str = 'testlist.txt',
@@ -65,3 +67,19 @@ def gen_discrete_map(im_size, points, resize_shape=None):
 
     assert np.sum(discrete_map) == num_gt
     return discrete_map
+
+
+def generate_weight_distribution(img_paths, weight_divider):
+    count_distribution = defaultdict(lambda: 0)
+    for image in img_paths:
+        quotient = image[1] // weight_divider
+        closest_biggest = quotient * weight_divider + weight_divider
+        count_distribution[closest_biggest] += 1
+
+    weight_distribution = dict()
+    for count in count_distribution.keys():
+        if count:
+            weight = 1.5 - count_distribution[count] / len(img_paths)
+            weight_distribution[count] = weight
+
+    return weight_distribution

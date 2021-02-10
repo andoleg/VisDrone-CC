@@ -17,3 +17,4 @@ from torch.nn import (
     NLLLoss2d,
     L1Loss,
 )
+from .regression import MAEWeighted

@@ -3,6 +3,8 @@ from torch.utils.data import Dataset
 from pathlib import Path
 from typing import Optional, List
 
+from src.data.utils.utils import generate_weight_distribution
+
 
 class VisDroneDatasetDET(Dataset):
     def __init__(self, data_root: Path,
@@ -11,7 +13,8 @@ class VisDroneDatasetDET(Dataset):
                  resize: tuple = (128, 128),
                  normalize: bool = True,
                  n_points: bool = True,
-                 transforms: Optional[List] = None) -> None:
+                 transforms: Optional[List] = None,
+                 weighted: bool = False) -> None:
         """
         :param folder_ids: list of ids of dataset tracks
         :param data_root: path to root "VisDrone2020-DET" folder
@@ -20,12 +23,15 @@ class VisDroneDatasetDET(Dataset):
         :param resize: desired image size
         :param normalize: image normalization
         :param n_points: if true will use number of people as label, otherwise generate density map
+        :param weighted: True to create weights for less represented samples
         """
         self.img_paths = list()  # list of tuples: (image_path, people_count)
         self.resize = resize
         self.normalize = normalize
         self.n_points = n_points
         self.transforms = transforms
+
+        self.weighted = weighted
 
         data_root = Path(data_root)
         imgs = (data_root / im_folder).glob('*')
@@ -43,6 +49,9 @@ class VisDroneDatasetDET(Dataset):
 
             self.img_paths.append((img, annotations))
 
+        if weighted:
+            self.weight_distribution = generate_weight_distribution(self.img_paths, self.weighted)
+
     def __getitem__(self, item):
         image_path, label = self.img_paths[item]
 
@@ -58,6 +67,11 @@ class VisDroneDatasetDET(Dataset):
 
         image = image.transpose(2, 0, 1)
 
+        if self.weighted:
+            quotient = label // self.weighted
+            closest_biggest = quotient * self.weighted + self.weighted
+            weight = self.weight_distribution[closest_biggest]
+            return image, label, weight
         return image, label
 
     def __len__(self):

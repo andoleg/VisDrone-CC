@@ -4,7 +4,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Optional, List
 
-from src.data.utils.utils import gen_discrete_map
+from src.data.utils.utils import gen_discrete_map, generate_weight_distribution
 
 
 class VisDroneDatasetCC(Dataset):
@@ -15,7 +15,8 @@ class VisDroneDatasetCC(Dataset):
                  normalize: bool = True,
                  train: bool = True,
                  n_points: bool = True,
-                 transforms: Optional[List] = None) -> None:
+                 transforms: Optional[List] = None,
+                 weighted: int = 0) -> None:
         """
         :param folder_ids: list of ids of dataset tracks
         :param data_root: path to root "VisDrone2020-CC" folder
@@ -26,6 +27,7 @@ class VisDroneDatasetCC(Dataset):
         :param train: if false, uses test data (that has no annotations)
         :param n_points: if true will use number of people as label, otherwise generate density map
         :param transforms: list of Albumentation transforms
+        :param weighted: int value to create weights for less represented samples (ranges are defined by the passed value)
         """
         self.img_paths = list()  # list of tuples: (image_path, people_count)
         self.resize = resize
@@ -33,6 +35,8 @@ class VisDroneDatasetCC(Dataset):
         self.train = train
         self.n_points = n_points
         self.transforms = transforms
+
+        self.weighted = weighted
 
         data_root = Path(data_root)
         folder_ids = [x.name.split('.')[0] for x in (data_root / an_folder).glob('*.txt')]
@@ -52,6 +56,9 @@ class VisDroneDatasetCC(Dataset):
                 for img in imgs:
                     self.img_paths.append((img, -1))
 
+        if weighted:
+            self.weight_distribution = generate_weight_distribution(self.img_paths, self.weighted)
+
     def __getitem__(self, item):
         image_path, label = self.img_paths[item]
 
@@ -60,7 +67,6 @@ class VisDroneDatasetCC(Dataset):
         image = cv2.resize(image, self.resize)
         if self.normalize:
             image = image / 255.0
-
 
         if self.transforms is not None:
             for transform in self.transforms:
@@ -71,6 +77,11 @@ class VisDroneDatasetCC(Dataset):
             label = gen_discrete_map(in_shape, label, tuple(x // 2 - 8 for x in self.resize))
 
         if self.train:
+            if self.weighted:
+                quotient = label // self.weighted
+                closest_biggest = quotient * self.weighted + self.weighted
+                weight = self.weight_distribution[closest_biggest]
+                return image, label, weight
             return image, label
         else:
             return image
