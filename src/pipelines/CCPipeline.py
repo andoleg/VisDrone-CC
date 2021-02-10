@@ -65,11 +65,13 @@ class CCPipeline(Pipeline):
         #                                     'class2_recall': recall_score(gt_classes, pred_classes)}, {})
 
     def _run_batch(self, batch, batch_idx, test=False):
-        x, y = batch
-        y = y.float()
+        params = list(batch)
+        x = params.pop(0)
+        for i in range(len(params)):
+            params[i] = params[i].float()
         preds = self.forward(x.float())
         preds = torch.reshape(preds, (-1,))
-        loss = self.criterions.mae(preds, y)  # mae loss
+        loss = self.criterions.mae(preds, *params)  # mae loss
         if test:
             self.predictions.extend(preds)
             self.ground_truth.extend(y)
