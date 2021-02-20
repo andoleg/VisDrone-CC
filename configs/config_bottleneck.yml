@@ -6,10 +6,13 @@ pipeline:
       in_channels: 3
       out_channels: 32
   optimizers:
-    - name: "SGD"
+#    - name: "SGD"
+#      params:
+#        lr: !!python/float 10e-5
+#        momentum: 0.9
+    - name: "Adam"
       params:
         lr: !!python/float 10e-5
-        momentum: 0.9
   schedulers:
     - name: 'StepLR'
       params:
@@ -17,7 +20,7 @@ pipeline:
         gamma: 0.3
   criterions:
     mae:
-      name: 'L1Loss'
+      name: 'MAEWeighted'
     mse:
       name: 'MSELoss'
   data:
@@ -42,7 +45,7 @@ pipeline:
             an_folder: 'annotations'
             resize: !!python/tuple [128, 128]
             normalize: True
-#            weighted: 20
+            weighted: 20
         - name: "VisDroneDatasetDET"
           params:
             data_root: '/content/VisDrone2019-DET-train'
@@ -50,13 +53,7 @@ pipeline:
             an_folder: 'annotations'
             resize: !!python/tuple [128, 128]
             normalize: True
-        - name: "VisDroneDatasetVID"
-          params:
-            data_root: '/content/VisDrone2019-VID-train'
-            im_folder: 'sequences'
-            an_folder: 'annotations'
-            resize: !!python/tuple [128, 128]
-            normalize: True
+            weighted: 20
     val:
       dataloader:
         batch_size: 64
@@ -70,7 +67,7 @@ pipeline:
             an_folder: 'annotations'
             resize: !!python/tuple [128, 128]
             normalize: True
-#            weighted: 20
+            weighted: 20
         - name: "VisDroneDatasetDET"
           params:
             data_root: '/content/VisDrone2019-DET-val'
@@ -78,13 +75,7 @@ pipeline:
             an_folder: 'annotations'
             resize: !!python/tuple [128, 128]
             normalize: True
-        - name: "VisDroneDatasetVID"
-            params:
-              data_root: '/content/VisDrone2019-VID-train'
-              im_folder: 'sequences'
-              an_folder: 'annotations'
-              resize: !!python/tuple [ 128, 128 ]
-              normalize: True
+            weighted: 20
     test:
       dataloader:
         batch_size: 64
@@ -119,9 +110,9 @@ trainer:
     params:
       save_dir: '/content/drive/MyDrive/Thesis_Colab/saved/logs/'
       name: 'bottlenecksmall4'
-      version: 'full_dataset_final'
+      version: 'weighted_DET_CC'
   checkpoint_callback:
-    filepath: '/content/drive/MyDrive/Thesis_Colab/saved/models/bottlenecksmall4_ful/{epoch}-{val_loss:.4f}'
+    filepath: '/content/drive/MyDrive/Thesis_Colab/saved/models/{epoch}-{val_loss:.4f}'
     monitor: 'val_loss'
     verbose: True
     save_last: True
@@ -136,7 +127,7 @@ trainer:
       params:
         monitor: 'val_loss'
         min_delta: 0.00
-        patience: 5
+        patience: 1
         verbose: False
         mode: 'min'
 
