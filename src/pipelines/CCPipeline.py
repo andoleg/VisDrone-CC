@@ -66,13 +66,14 @@ class CCPipeline(Pipeline):
 
     def _run_batch(self, batch, batch_idx, test=False):
         params = list(batch)
-        x = params.pop(0)
         for i in range(len(params)):
             params[i] = params[i].float()
-        preds = self.forward(x.float())
+        x = params.pop(0)
+        preds = self.forward(x)
         preds = torch.reshape(preds, (-1,))
         loss = self.criterions.mae(preds, *params)  # mae loss
         if test:
+            y = params[0]
             self.predictions.extend(preds)
             self.ground_truth.extend(y)
             mse_loss = self.criterions.mse(preds, y)
