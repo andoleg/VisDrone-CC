@@ -20,7 +20,7 @@ pipeline:
         gamma: 0.3
   criterions:
     mae:
-      name: 'MAEWeighted'
+      name: 'L1Loss'
     mse:
       name: 'MSELoss'
   data:
@@ -45,15 +45,15 @@ pipeline:
             an_folder: 'annotations'
             resize: !!python/tuple [128, 128]
             normalize: True
-            weighted: 20
-        - name: "VisDroneDatasetDET"
-          params:
-            data_root: '/content/VisDrone2019-DET-train'
-            im_folder: 'images'
-            an_folder: 'annotations'
-            resize: !!python/tuple [128, 128]
-            normalize: True
-            weighted: 20
+#            weighted: 20
+#        - name: "VisDroneDatasetDET"
+#          params:
+#            data_root: '/content/VisDrone2019-DET-train'
+#            im_folder: 'images'
+#            an_folder: 'annotations'
+#            resize: !!python/tuple [128, 128]
+#            normalize: True
+#            weighted: 20
     val:
       dataloader:
         batch_size: 64
@@ -67,15 +67,15 @@ pipeline:
             an_folder: 'annotations'
             resize: !!python/tuple [128, 128]
             normalize: True
-            weighted: 20
-        - name: "VisDroneDatasetDET"
-          params:
-            data_root: '/content/VisDrone2019-DET-val'
-            im_folder: 'images'
-            an_folder: 'annotations'
-            resize: !!python/tuple [128, 128]
-            normalize: True
-            weighted: 20
+#            weighted: 20
+#        - name: "VisDroneDatasetDET"
+#          params:
+#            data_root: '/content/VisDrone2019-DET-val'
+#            im_folder: 'images'
+#            an_folder: 'annotations'
+#            resize: !!python/tuple [128, 128]
+#            normalize: True
+#            weighted: 20
     test:
       dataloader:
         batch_size: 64
@@ -127,7 +127,7 @@ trainer:
       params:
         monitor: 'val_loss'
         min_delta: 0.00
-        patience: 1
+        patience: 5
         verbose: False
         mode: 'min'
 
