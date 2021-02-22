@@ -110,9 +110,9 @@ trainer:
     params:
       save_dir: '/content/drive/MyDrive/Thesis_Colab/saved/logs/'
       name: 'bottlenecksmall4'
-      version: 'weighted_DET_CC'
+      version: 'CC_raw'
   checkpoint_callback:
-    filepath: '/content/drive/MyDrive/Thesis_Colab/saved/models/{epoch}-{val_loss:.4f}'
+    filepath: '/content/drive/MyDrive/Thesis_Colab/saved/models/bottlenecksmall4/CC_raw/{epoch}-{val_loss:.4f}'
     monitor: 'val_loss'
     verbose: True
     save_last: True
